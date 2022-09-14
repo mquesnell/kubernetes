@@ -1,0 +1,27 @@
+#
+# Creates a job that runs the hello from my world container created
+# by the Dockerfile in this directory.
+#
+# Before building the docker image, change the terminal to use minikube's
+# docker daemon:
+#
+#   minikube docker-env
+#
+# and then run the command it specifies (eval...)
+#
+# This will allow k8s to run a local docker image.
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-my-world
+spec:
+  template:
+    metadata:
+      name: hello-my-world-pod
+    spec:
+      containers:
+        - name: hello-my-world
+          image: hello-my-world:abc
+          imagePullPolicy: Never
+      restartPolicy: Never

@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: front-end
+  annotations:
+    buildversion: "1.2.3"
+    test_anno: test
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: size
+                operator: In
+                values:
+                - Large
+                - Medium
+              - key: another
+                operator: Exists
+              - key: color
+                operator: NotIn
+                values:
+                - red
+                - yellow
+  nodeSelector:
+    size: Large  
+  tolerations:
+    - key: app
+      operator: "Equal"
+      value: "blue"
+      effect: "NoSchedule"
+  # optional
+  automountServiceAccountToken: false
+  serviceAccountName: my-service-account
+  # securityContext can be applied at the pod level (here) or the container level
+  securityContext:
+    runAsUser: 1000
+  # default is Always. other choices Never, OnFailure
+  restartPolicy: Always
+  initContainers:
+    - name: blah
+      image: blah-image
+      command: ['do', 'a', 'command']
+  volumes:
+    - name: data-volume
+      # hostPath:
+      #   path: /path-on-the-host
+      #   type: Directory
+      persistentVolumeClaim:
+        claimName: my-claim
+  containers:
+    - name: nginx-container
+      volumeMounts:
+        - mountPath: /opt
+          name: data-volume
+      image: nginx
+      command:
+        - "sleep"
+        - "1000"
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "1"
+        limits:
+          memory: "2Gi"
+          cpu: "2"
+      securityContext:
+        runAsUser: 1001
+        # capabilities are only supported at the container level
+        capabilities: 
+          add: ["MAC_ADMIN"]
+      ports:
+        - containerPort: 8080
+      # livenessProbe is configured identical to readinessProbe
+      readinessProbe:
+        httpGet:
+          path: /api/ready
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 8
+        tcpSocket:
+          port: 3306
+        exec:
+          command:
+            - "cat"
+            - "/app/is_ready"
+      env:
+      # environment variable
+        - name: POSTGRESS_PASSWORD
+          value: mysecretpassword
+      # inject a single value from a config map
+        - name: SOMETHING_ELSE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_MODE
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DB_PASS
+      # inject the whole config map
+      envFrom:
+        - configMapRef:
+            name: app-config
+        - secretRef:
+            name: app-secret
+
+

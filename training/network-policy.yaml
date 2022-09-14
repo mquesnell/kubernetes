@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+  # pod(s) on which to apply the policy
+    matchLabels:
+      role: db
+  policyTypes:
+  # types of access being controlled (relative to the pod(s) selected above): Egress and/or Ingress
+    - Ingress
+    - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+      namespaceSelector:
+    # namespaceSelector is optional if pods from any namespace are allowed
+        matchLabels:
+          name: prod
+    - ipBlock:
+        # block of IP addresses outside the cluster than can ingress the pod
+        cidr: 192.168.5.10/32
+    ports:
+      - protocol: TCP
+        port: 3306
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            name: another-pod
+      - ipBlock:
+          cidr: 192.168.5.10/32
+      ports:
+      - protocol: TCP
+        port: 80
