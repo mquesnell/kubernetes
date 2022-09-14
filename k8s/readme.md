@@ -58,6 +58,13 @@ MySQL is run in a pod and attached to a persistent volume for data storage.
 ## Peristent Volume Claim
 **mysql-pvc.yaml** claims 10 MB of storage in the persistent volume for mysql data storage
 
+## Intialization
+**init.sql** in the backend directory contains commands for initializing the database if necessary.
+
+To initialize the database:
+1. Log into the mysql pod:  ```kubectl exec mysql -it -- bash```
+2. Run the mysql command line:  ```mysql --user=root --password=$MYSQL_ROOT_PASSWORD```
+3. Issue the commands in init.sql either by typing them in or by copying and pasting.
 
 <p>&nbsp;</p>
 
