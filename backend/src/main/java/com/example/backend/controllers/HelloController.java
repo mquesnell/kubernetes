@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.controllers;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
-  
+
   @GetMapping("/")
   public String index() {
     return "Seasons greetings from Spring Boot!\n";

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_URL}:${DB_PORT}/${DB_NAME}?serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+# management.endpoints.web.exposure.include: env,health
+
+spring.datasource.driverClassName: com.mysql.cj.jdbc.Driver

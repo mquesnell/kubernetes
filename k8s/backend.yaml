@@ -16,6 +16,20 @@ spec:
       containers:
       - name: toybackend
         image: toybackend:latest
+        env:
+          - name: DB_USERNAME
+            value: root
+          - name: DB_URL
+            value: mysql
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_NAME
+            value: toybox
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: mysql-pass
         imagePullPolicy: Never
         resources:
           limits:

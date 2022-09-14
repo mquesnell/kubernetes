@@ -6,6 +6,7 @@ export const API_URL = "http://127.0.0.1:41997";
 // export const API_URL = "http://" + process.env.BACKEND_SERVICE_HOST + ':' + process.env.BACKEND_SERVICE_PORT;
 
 export interface SetupRequestArgs {
+  url: string;
   path: string;
   method: any;
   body?: any;
@@ -31,7 +32,10 @@ export interface AxiosConfig {
 }
 
 const setupRequest = (params: SetupRequestArgs): RequestParams => {
-  const endpoint = `${API_URL}/${params.path}`;
+  const endpoint =
+    params.url === ""
+      ? `${API_URL}/${params.path}`
+      : `${params.url}/${params.path}`;
 
   const headersWithXSRFAndTimestamp = {
     ...getConfigHeaders(params.config),
@@ -59,10 +63,11 @@ const setupRequest = (params: SetupRequestArgs): RequestParams => {
 };
 
 export const get = async (
+  url: string,
   path: string,
   headers?: any
 ): Promise<AxiosResponse<any>> => {
-  const { endpoint, config } = setupRequest({ path, method: "get" });
+  const { endpoint, config } = setupRequest({ url, path, method: "get" });
   const updatedConfig = {
     ...config,
     headers: { ...config?.headers, ...headers },
@@ -84,6 +89,7 @@ export const put = async (
   axiosConfig?: AxiosConfig
 ): Promise<AxiosResponse<any>> => {
   const { endpoint, config } = setupRequest({
+    url: "",
     path,
     method: "put",
     body,
@@ -122,6 +128,7 @@ export const post = async (
   axiosConfig?: AxiosConfig
 ): Promise<AxiosResponse<any>> => {
   const { endpoint, config } = setupRequest({
+    url: "",
     path,
     method: "post",
     body,
@@ -176,7 +183,11 @@ export const postInWorker = async (
 };
 
 export const remove = async (path: string, headers?: any) => {
-  const { endpoint, config } = setupRequest({ path, method: "delete" });
+  const { endpoint, config } = setupRequest({
+    url: "",
+    path,
+    method: "delete",
+  });
   const updatedConfig = {
     ...config,
     headers: { ...config?.headers, ...headers },
